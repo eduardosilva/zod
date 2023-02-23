@@ -27,7 +27,7 @@ main() {
     docker run \
         --interactive \
         --rm \
-        --volume "$(pwd)":/workdir \
+        --volume "$output":/workdir \
         youtube-dl \
         yt-dlp \
             --extract-audio \
@@ -38,16 +38,17 @@ main() {
 
     # creating music folder
     info "Setting music folder"
-    local file="$(ls --sort time *.mp3 | head --lines 1)"
+    local file="$(ls --sort time $output/*.mp3 | head --lines 1)"
+    file="$(basename "$file")"
     local song_folder=$(basename "$file" .mp3 | \
                       sed 's/[[:space:]]/\./g' | \
                       sed 's/\.-\./-/g' | \
                       tr '[:upper:]' '[:lower:]')
 
-    song_folder="$(pwd)/$song_folder"
+    song_folder="$output/$song_folder"
     mkdir "$song_folder"
     info "Folder $song_folder created succesfully"
-    mv "$file" "$song_folder/$file" --force
+    mv "$output/$file" "$song_folder/$file" --force
 
     info "Spleeting music"
     # spleeting music
@@ -73,6 +74,7 @@ Available options:
 -h, --help      Print this help and exit
 -v, --verbose   Print script debug info
 -u, --url       Youtube url
+-o, --output    Output folder
 EOF
   exit
 }
@@ -159,22 +161,23 @@ die() {
 parse_params() {
   # default values of variables set from params
   url=''
+  output="$(pwd)"
 
   while :; do
     case "${1-}" in
     -h | --help) usage ;;
     -v | --verbose) set -x ;;
     --no-color) NO_COLOR=1 ;;
-    -u | --url) # example named parameter
+    -u | --url) 
       url="${2-}"
       shift
       ;;
-    -f | --filename) # example named parameter
-      tag="${2-}"
+    -o | --output) 
+      output="${2-}"
       shift
       ;;
-    -o | --output) # example named parameter
-      output="${2-}"
+    -f | --filename) 
+      filename="${2-}"
       shift
       ;;
     -?*) die "Unknown option: $1" ;;
