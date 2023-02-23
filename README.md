@@ -28,6 +28,7 @@ zod.sh -h
 
 * **-u, --url**: The URL of the YouTube video to download and separate (required).
 * **-o, --output**: The output directory to save the separated stems (default: current directory).
+* **-f, --filename**: Define a new name to the file (default: youtube file name)
 
 ## Technical Details
 

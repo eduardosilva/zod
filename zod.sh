@@ -33,7 +33,7 @@ main() {
             --extract-audio \
             --audio-format "mp3" \
             --audio-quality 0 \
-            -o "%(title)s.%(ext)s" \
+            -o "$filename.%(ext)s" \
             $url
 
     # creating music folder
@@ -75,6 +75,7 @@ Available options:
 -v, --verbose   Print script debug info
 -u, --url       Youtube url
 -o, --output    Output folder
+-f, --filename  Filename without extension
 EOF
   exit
 }
@@ -162,6 +163,7 @@ parse_params() {
   # default values of variables set from params
   url=''
   output="$(pwd)"
+  filename='%(title)s'
 
   while :; do
     case "${1-}" in
