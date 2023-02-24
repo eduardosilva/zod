@@ -163,7 +163,7 @@ parse_params() {
   # default values of variables set from params
   url=''
   output="$(pwd)"
-  filename='%(title)s'
+  filename='%(artist)s-%(title)s'
 
   while :; do
     case "${1-}" in

@@ -26,9 +26,9 @@ zod.sh -h
 
 ## Options
 
-* **-u, --url**: The URL of the YouTube video to download and separate (required).
-* **-o, --output**: The output directory to save the separated stems (default: current directory).
-* **-f, --filename**: Define a new name to the file (default: youtube file name)
+* **-u, --url**: The URL of the YouTube video to download and separate (required)
+* **-o, --output**: Output directory for the music and separated steams
+* **-f, --filename**:  Filename template for the music and separated stems. You can use `%(title)s`, `%(artist)s`, `%(album)s` and `%(date)s` to include metadata in the filename. Default is `%(artist)s`-`%(title)s`
 
 ## Technical Details
 
