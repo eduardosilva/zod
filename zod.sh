@@ -57,63 +57,75 @@ YELLOW='\033[1;33m'
 main() {
     [[ -z "${ZOD_MOODEL_FOLDER-}" ]] && die "Missing required env variable: ZOD_MOODEL_FOLDER"
 
-    # download music
+    download_song
+    create_song_folder
+    spleet_song
+}
+
+#-------------------------------------------------------------
+# DOWNLOAD SONG USING YOUTUBE-DL 
+#-------------------------------------------------------------
+download_song() {
     info "Getting music..."
-    docker run \
+    exec_subprocess "docker run \
         --interactive \
         --rm \
-        --volume "$output":/workdir \
+        --volume \"$output\":/workdir \
         youtube-dl \
         yt-dlp \
             --extract-audio \
             --audio-format "mp3" \
             --audio-quality 0 \
-            -o "$filename.%(ext)s" \
-            $url
+            -o \"$filename.%(ext)s\" \
+            \"$url\""
+}
 
-    # creating music folder
-    info "Setting music folder"
-    local file="$(ls --sort time $output/*.mp3 | head --lines 1)"
-    file="$(basename "$file")"
-    local song_folder=$(basename "$file" .mp3 | \
+#-------------------------------------------------------------
+# SPLEET IN SONG IN SPECIFIC STEMS: 
+# (vocal, drums, bass, piano and others)
+#-------------------------------------------------------------
+spleet_song(){
+    info "Spleeting music.."
+    exec_subprocess "docker run \
+        -v \"$__song_folder\":/input \
+        -v \"$__song_folder\":/output \
+        -v \"$ZOD_MOODEL_FOLDER\":/model \
+        deezer/spleeter:3.8-5stems \
+        separate -p spleeter:5stems /input/\"$__song_file\" -o /output"
+}
+
+#-------------------------------------------------------------
+# EXECUTE SUBPROCESS AND SHOW IT STDOUT AS CURRENT STDOUT
+#-------------------------------------------------------------
+exec_subprocess() {
+    command=$1
+    (eval "$command") 2>&1 | sed 's/INFO://g' | while IFS= read -r line; do info "$line"; done
+}
+
+#-------------------------------------------------------------
+# CREATE SONG FOLDER WHERE WILL BE PUT THE *.MP3 FILE 
+# AND THE STEMS
+#-------------------------------------------------------------
+create_song_folder(){
+    info "Setting song folder"
+
+    # Find all MP3 files in the output directory
+    # Sort them by modification time (newest first)
+    # Select the first file (i.e., the newest)
+    __song_file="$(find "$output" -maxdepth 1 -type f -name '*.mp3' -printf '%T@ %p\n' | sort -n | head -n 1 | cut -d ' ' -f 2-)"
+    __song_file="$(basename "$__song_file")"
+    __song_folder=$(basename "$__song_file" .mp3 | \
                       sed 's/[[:space:]]/\./g' | \
                       sed 's/\.-\./-/g' | \
                       tr '[:upper:]' '[:lower:]')
 
-    song_folder="$output/$song_folder"
-    mkdir "$song_folder"
-    info "Folder $song_folder created succesfully"
-    mv "$output/$file" "$song_folder/$file" --force
-
-    info "Spleeting music"
-    # spleeting music
-    docker run \
-        -v "$song_folder":/input \
-        -v "$song_folder":/output \
-        -v "$(echo $ZOD_MOODEL_FOLDER)":/model \
-        deezer/spleeter:3.8-5stems \
-        separate -p spleeter:5stems /input/"$file" -o /output 
+    __song_folder="$output/$__song_folder"
+    mkdir "$__song_folder"
+    info "Folder $__song_folder created succesfully"
+    mv "$output/$__song_file" "$__song_folder/$__song_file" --force
 }
 
-#-------------------------------------------------------------
-# DISPLAY HOW TO USE THE SCRIPT
-#-------------------------------------------------------------
-usage() {
-  cat <<EOF
-Usage: $(basename "$__file_name") [-h] [-v] [-f] -p param_value arg1 [arg2...]
 
-Script description here.
-
-Available options:
-
--h, --help      Print this help and exit
--v, --verbose   Print script debug info
--u, --url       Youtube url
--o, --output    Output folder
--f, --filename  Filename without extension
-EOF
-  exit
-}
 
 #-------------------------------------------------------------
 # EXECUTED WHEN THE SCRIPT IS FINISHED 
