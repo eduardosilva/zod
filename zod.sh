@@ -103,7 +103,20 @@ spleet_song(){
 #-------------------------------------------------------------
 exec_subprocess() {
     command=$1
-    (eval "$command") 2>&1 | sed 's/INFO://g' | while IFS= read -r line; do info "$line"; done
+    (eval "$command") 2>&1  | while IFS= read -r line; do 
+        # check if the string contains ERROR and call the function if it does
+        if [[ $line == *"ERROR"* ]]; then
+
+            # remove the previous ERROR: from the line to use the local error message  
+            line=$(printf "$line" | sed 's/ERROR: //g')
+            error "$line"
+            continue
+        fi
+
+        # remove the previous INFO: from the line to use the local error message  
+        line=$(printf "$line" | sed 's/INFO: //g')
+        info "$line"; 
+    done
 }
 
 #-------------------------------------------------------------
