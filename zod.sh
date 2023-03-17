@@ -55,6 +55,10 @@ YELLOW='\033[1;33m'
 # MAING FUNCTION
 #-------------------------------------------------------------
 main() {
+    if ! command -v docker &> /dev/null; then
+        die "Error: Docker is not installed"
+    fi
+
     [[ -z "${ZOD_MOODEL_FOLDER-}" ]] && die "Missing required env variable: ZOD_MOODEL_FOLDER"
 
     download_song
