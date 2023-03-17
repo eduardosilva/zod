@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 #-------------------------------------------------------------
+# ZOD.SH - A COMMAND-LINE TOOL TO CONVERT YOUTUBE VIDEOS TO MP3
+#
+# USAGE: zod.sh -u <youtube-url>
+#
 # RECOMMENDATIONS:
 # NOT use command arguments abbreviations (Ex.: sed -e / sed -expression)
 # OPTIONAL send useless output to (Ex.: command > /dev/null 2>&1)
@@ -10,11 +14,42 @@
 set -Eeuo pipefail
 trap cleanup SIGINT SIGTERM ERR EXIT
 
+#-------------------------------------------------------------
+# DISPLAY HOW TO USE THE SCRIPT
+#-------------------------------------------------------------
+usage() {
+  cat <<EOF
+Usage: $(basename "$__file_name") [-h] [-v] [-f] -u <url> arg1 [arg2...]
+
+Script description here.
+
+Available options:
+
+-h, --help      Print this help and exit
+-v, --verbose   Print script debug info
+-u, --url       Youtube url
+-o, --output    Output folder
+-f, --filename  Filename without extension
+EOF
+  exit
+}
+
+
 # MAGIC VARIABLES
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
-__file_name="$(basename "$__file")"
-__base="$(basename "${__file}" .sh)"
+readonly __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+readonly __file_name="$(basename "$__file")"
+readonly __base="$(basename "${__file}" .sh)"
+
+# Define colors
+NOFORMAT='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
 
 #-------------------------------------------------------------
 # MAING FUNCTION
@@ -92,12 +127,11 @@ cleanup() {
 # SET COLORS CONFIGURATION
 #-------------------------------------------------------------
 setup_colors() {
-  if [[ -t 2 ]] && [[ -z "${NO_COLOR-}" ]] && [[ "${TERM-}" != "dumb" ]]; then
-    NOFORMAT='\033[0m' RED='\033[0;31m' GREEN='\033[0;32m' ORANGE='\033[0;33m' BLUE='\033[0;34m' PURPLE='\033[0;35m' CYAN='\033[0;36m' YELLOW='\033[1;33m'
-  else
-    NOFORMAT='' RED='' GREEN='' ORANGE='' BLUE='' PURPLE='' CYAN='' YELLOW=''
-  fi
+    if ! [[ -t 2 ]] || ! [[ -z "${NO_COLOR-}" ]] || [[ "${TERM-}" == "dumb" ]]; then
+        NOFORMAT='' RED='' GREEN='' ORANGE='' BLUE='' PURPLE='' CYAN='' YELLOW=''
+    fi
 }
+
 
 #-------------------------------------------------------------
 # PRINT MESSAGES
@@ -200,4 +234,4 @@ parse_params "$@"
 setup_colors
 main "$@"
 
-    
+printf '\n'
