@@ -1,0 +1,4 @@
+librosa==0.8.1
+matplotlib==3.7.0 
+scipy
+mido
