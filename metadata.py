@@ -60,17 +60,23 @@ onset_env = librosa.onset.onset_strength(y=y, sr=sr,
 frames = range(len(onset_env))
 t = librosa.frames_to_time(frames, sr=sr, hop_length=hop_length)
 
-plt.plot(t, onset_env)
-plt.xlim(0, t.max())
-plt.ylim(0)
-plt.xlabel('Time (sec)')
-plt.title('Novelty Function')
+#plt.plot(t, onset_env)
+#plt.xlim(0, t.max())
+#plt.ylim(0)
+#plt.xlabel('Time (sec)')
+#plt.title('Novelty Function')
 
 user_estimated_tempo = 60
 prior = scipy.stats.uniform(user_estimated_tempo, user_estimated_tempo / t.max())  # uniform over 30-300 BPM
 
 tempo_range = librosa.beat.tempo(y=y_percussive, sr=sr, hop_length=hop_length,aggregate=None,prior=prior)
 tempo, beats = librosa.beat.beat_track(y=y_percussive, sr=sr, hop_length=hop_length, start_bpm=tempo_range[0])
+
+plt.figure(figsize=(10, 10))
+
+plt.subplot(2, 1, 1)
+librosa.display.waveshow(y, alpha=0.5)
+plt.title('Waveform')
 
 # Print the tempo and beat times
 print(f'Estimated Tempo: {tempo:.2f} BPM')
