@@ -30,6 +30,15 @@ zod.sh -h
 * **-o, --output**: Output directory for the music and separated steams
 * **-f, --filename**:  Filename template for the music and separated stems. You can use `%(title)s`, `%(artist)s`, `%(album)s` and `%(date)s` to include metadata in the filename. Default is `%(artist)s`-`%(title)s`
 
+## Environment Variables
+
+
+You can actually configure Zod with environment variables.
+
+### ZOD_MODEL_FOLDER
+
+Used to overwrite the molder folder path used by `deezer/spleeter`
+
 ## Technical Details
 
 This application uses the following tools and technologies:
