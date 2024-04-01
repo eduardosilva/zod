@@ -25,9 +25,9 @@ Script description here.
 
 Available options:
 
+-u, --url       Youtube url (required)
 -h, --help      Print this help and exit
 -v, --verbose   Print script debug info
--u, --url       Youtube url
 -o, --output    Output folder
 -f, --filename  Filename without extension
 EOF
@@ -67,7 +67,7 @@ main() {
 }
 
 #-------------------------------------------------------------
-# DOWNLOAD SONG USING YOUTUBE-DL 
+# DOWNLOAD SONG USING mikenye/youtube-dl 
 #-------------------------------------------------------------
 download_song() {
     info "Getting music..."
@@ -75,8 +75,7 @@ download_song() {
         --interactive \
         --rm \
         --volume \"$output\":/workdir \
-        youtube-dl \
-        yt-dlp \
+        mikenye/youtube-dl \
             --extract-audio \
             --audio-format "mp3" \
             --audio-quality 0 \
